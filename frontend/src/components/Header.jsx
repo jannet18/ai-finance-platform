@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import logo2 from "../assets/logo2.png"; // Adjust the path as necessary
+import logo2 from "../assets/logo2.png";
 import { LayoutDashboard, PenBox, User } from "lucide-react";
 import { Button } from "./ui/button";
 

@@ -1,10 +1,10 @@
-import Header from "@/components/Header";
+import HeroSection from "../pages/auth/HeroSection";
 import React from "react";
 
 const Home = () => {
   return (
-    <main className="min-h-screen">
-      <Header />
+    <main className="mt-40">
+      <HeroSection />
     </main>
   );
 };
