@@ -7,6 +7,7 @@ import { HTTPSTATUS } from "../config/httpConfig";
 import { ErrorHandler } from "../middlewares/errorHandler.middleware";
 import { BadRequestException } from "../utils/app-error";
 import { asyncHandler } from "../middlewares/asyncHandler.middleare";
+import connectDB from "../config/databaseConfig";
 dotenv.config();
 
 const app = express();
@@ -36,6 +37,7 @@ res.status(HTTPSTATUS.OK).json({
 });
 
 app.use(ErrorHandler);
-app.listen(Env.PORT, () => {
+app.listen(Env.PORT, async () => {
+  await connectDB();
   console.log(`Server is running on port ${Env.PORT} in {Env.NODE_ENV} mode.`);
 });
