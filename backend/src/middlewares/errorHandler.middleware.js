@@ -1,7 +1,24 @@
+import { ZodError } from "zod";
 import { HTTPSTATUS } from "../config/httpConfig";
+import { ErrorCodeEnum } from "../enums/errorCodeEnum";
+
+const formatZodError = (res, err) => {
+  const errors = err?.issues?.map((err) => ({
+    field: err.path.join("."),
+    message: err.message,
+  }));
+  return res.status(HTTPSTATUS.BAD_REQUEST).json({
+    message: "Validation failed",
+    errors: errors,
+    errorCode: ErrorCodeEnum.VALIDATION_ERROR,
+  });
+};
 
 export const ErrorHandler = (err, req, res, next) => {
-  if (error instanceof AppError) {
+  if (err instanceof ZodError) {
+    return formatZodError(res, err);
+  }
+  if (err instanceof AppError) {
     return res.status(err.statusCode).json({
       message: res.message || "An error occurred",
       error: {

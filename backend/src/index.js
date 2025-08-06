@@ -2,12 +2,13 @@ import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import dotenv from "dotenv";
-import { Env } from "../config/envConfig";
-import { HTTPSTATUS } from "../config/httpConfig";
-import { ErrorHandler } from "../middlewares/errorHandler.middleware";
-import { BadRequestException } from "../utils/app-error";
-import { asyncHandler } from "../middlewares/asyncHandler.middleare";
-import connectDB from "../config/databaseConfig";
+import { Env } from "./config/envConfig";
+import { HTTPSTATUS } from "./config/httpConfig";
+import { ErrorHandler } from "./middlewares/errorHandler.middleware";
+import { BadRequestException } from "./utils/app-error";
+import { asyncHandler } from "./middlewares/asyncHandler.middleare";
+import connectDB from "./config/databaseConfig";
+import authRoutes from "./routes/auth.route";
 dotenv.config();
 
 const app = express();
@@ -37,6 +38,7 @@ res.status(HTTPSTATUS.OK).json({
 });
 
 app.use(ErrorHandler);
+app.use(`${BASE_PATH}/auth`, authRoutes);
 app.listen(Env.PORT, async () => {
   await connectDB();
   console.log(`Server is running on port ${Env.PORT} in {Env.NODE_ENV} mode.`);
