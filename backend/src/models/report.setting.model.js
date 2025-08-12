@@ -1,4 +1,6 @@
-import mongoose from "mongoose";
+const mongoose = require("mongoose");
+
+const MONTHLY = "MONTHLY";
 
 const reportSettingSchema = new mongoose.Schema(
   {
@@ -30,4 +32,4 @@ const ReportSettingModel = mongoose.model(
   "Report Setting",
   reportSettingSchema
 );
-export default ReportSettingModel;
+module.exports = { ReportSettingModel };

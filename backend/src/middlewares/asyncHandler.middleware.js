@@ -1,4 +1,4 @@
-export const asyncHandler = (fn) => {
+const asyncHandler = (fn) => {
   return (req, res, next) => {
     Promise.resolve(fn(req, res, next)).catch((err) => {
       // Log the error for debugging purposes
@@ -9,3 +9,5 @@ export const asyncHandler = (fn) => {
     });
   };
 };
+
+module.exports = asyncHandler;

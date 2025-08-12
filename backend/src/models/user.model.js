@@ -1,5 +1,5 @@
-import mongoose from "mongoose";
-import { compareValue } from "../utils/bcrypt";
+const mongoose = require("mongoose");
+const { compareValue } = require("../utils/bcrypt");
 
 const userSchema = new mongoose.Schema({
   name: {
@@ -21,11 +21,11 @@ const userSchema = new mongoose.Schema({
   },
   createdAt: {
     type: Date,
-    default: Date.now,
+    default: Date.now(),
   },
   updatedAt: {
     type: Date,
-    default: Date.now,
+    default: Date.now(),
   },
 });
 userSchema.pre("save", async function (next) {
@@ -45,8 +45,8 @@ userSchema.methods.omitPassword = function () {
 };
 
 userSchema.methods.comparePassword = async function (candidatePassword) {
-  return compareValue(this.password === candidatePassword);
+  return compareValue(this.password, candidatePassword);
 };
 
 const UserModel = mongoose.model("User", userSchema);
-export default UserModel;
+module.exports = { UserModel };

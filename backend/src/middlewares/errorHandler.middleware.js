@@ -1,6 +1,6 @@
-import { ZodError } from "zod";
-import { HTTPSTATUS } from "../config/httpConfig";
-import { ErrorCodeEnum } from "../enums/errorCodeEnum";
+const { ZodError } = require("zod");
+const { HTTPSTATUS } = require("../config/httpConfig");
+const { ErrorCodeEnum } = require("../enums/errorCodeEnum");
 
 const formatZodError = (res, err) => {
   const errors = err?.issues?.map((err) => ({
@@ -14,7 +14,7 @@ const formatZodError = (res, err) => {
   });
 };
 
-export const ErrorHandler = (err, req, res, next) => {
+const ErrorHandler = (err, req, res, next) => {
   if (err instanceof ZodError) {
     return formatZodError(res, err);
   }
@@ -32,3 +32,5 @@ export const ErrorHandler = (err, req, res, next) => {
     error: err.message || "An unexpected error occurred.",
   });
 };
+
+module.exports = ErrorHandler;

@@ -1,6 +1,6 @@
-import { StartOfMonth } from "date-fns";
+const { StartOfMonth } = require("date-fns");
 
-export const calculateNextReportDate = (lastSentDate) => {
+const calculateNextReportDate = (lastSentDate) => {
   const currentDate = new Date();
   const lastSent = lastSentDate || currentDate;
 
@@ -8,3 +8,5 @@ export const calculateNextReportDate = (lastSentDate) => {
 
   nextDate.setHours(0, 0, 0, 0);
 };
+
+module.exports = { calculateNextReportDate };
