@@ -1,26 +1,31 @@
-const ReportSettingModel = require("../models/report.setting.model");
-const UserModel = require("../models/user.model");
+const { default: mongoose } = require("mongoose");
+const { ReportSettingModel } = require("../models/report.setting.model");
+const { UserModel } = require("../models/user.model");
 const {
   NotfoundException,
   UnauthorizedException,
 } = require("../utils/app-error");
 const { calculateNextReportDate } = require("../utils/helper");
 const { signJwtToken } = require("../utils/jwt");
+const { MONTHLY } = require("../models/report.setting.model");
 
-const registerService = async (body) => {
-  const { email } = body;
+const registerService = async (userData) => {
+  const { email, fullName, password, profileImageUrl } = userData;
 
-  const session = await mongoose.StartSession();
+  const session = await mongoose.startSession();
 
   try {
-    await session.withTransaction(async () => {
+    const result = await session.withTransaction(async () => {
       const extistingUser = await UserModel.findOne({ email }).session(session);
       if (extistingUser) {
         throw new UnauthorizedException("User already exists.");
       }
 
       const newUser = new UserModel({
-        ...body,
+        fullName,
+        email,
+        password,
+        profilePicture: profileImageUrl || null,
       });
 
       await newUser.save({ session });
@@ -37,6 +42,7 @@ const registerService = async (body) => {
 
       return { user: newUser.omitPassword() };
     });
+    return result;
   } catch (error) {
     throw error;
   } finally {
@@ -44,8 +50,8 @@ const registerService = async (body) => {
   }
 };
 
-const loginService = async (body) => {
-  const { email, password } = body;
+const loginService = async (userData) => {
+  const { email, password } = userData;
 
   const user = await UserModel.findOne({ email });
   if (!user) throw new NotfoundException("User not found.");

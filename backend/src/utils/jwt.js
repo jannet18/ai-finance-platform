@@ -1,5 +1,5 @@
 const jwt = require("jsonwebtoken");
-const Env = require("../config/envConfig");
+const { Env } = require("../config/envConfig");
 
 const defaults = {
   audience: ["user"],

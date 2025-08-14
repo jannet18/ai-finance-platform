@@ -21,3 +21,5 @@ const httpConfig = () => ({
 });
 
 const HTTPSTATUS = httpConfig();
+
+module.exports = { HTTPSTATUS };

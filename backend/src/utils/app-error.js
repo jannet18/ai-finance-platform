@@ -1,3 +1,5 @@
+const { HTTPSTATUS } = require("../config/httpConfig");
+
 class AppError extends Error {
   constructor(
     message,

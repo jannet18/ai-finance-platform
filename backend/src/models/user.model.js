@@ -1,8 +1,8 @@
 const mongoose = require("mongoose");
-const { compareValue } = require("../utils/bcrypt");
+const { compareValue, hashPassword } = require("../utils/bcrypt");
 
 const userSchema = new mongoose.Schema({
-  name: {
+  fullName: {
     type: String,
     required: true,
   },

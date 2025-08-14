@@ -1,6 +1,7 @@
 const { ZodError } = require("zod");
 const { HTTPSTATUS } = require("../config/httpConfig");
 const { ErrorCodeEnum } = require("../enums/errorCodeEnum");
+const { AppError } = require("../utils/app-error");
 
 const formatZodError = (res, err) => {
   const errors = err?.issues?.map((err) => ({
@@ -27,7 +28,7 @@ const ErrorHandler = (err, req, res, next) => {
       },
     });
   }
-  return res.status(HTTPSTATUS.INTERNAL_SERVER_ERROR).JSON({
+  return res.status(HTTPSTATUS.INTERNAL_SERVER_ERROR).json({
     message: "Internal Server Error",
     error: err.message || "An unexpected error occurred.",
   });
