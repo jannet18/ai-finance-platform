@@ -27,7 +27,6 @@ const compareValue = async (candidateValue, hashedValue) => {
   } catch (error) {
     throw new Error("Error comparing values: " + error.message);
   }
-  return await bcrypt.compare(candidateValue, hashedValue);
 };
 
 module.exports = { compareValue, hashPassword };

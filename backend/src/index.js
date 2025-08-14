@@ -34,8 +34,8 @@ app.get(
   })
 );
 
-// app.use(`/${BASE_PATH}/auth`, authRoutes);
-app.use("/api/v1/auth", authRoutes);
+app.use(`/${BASE_PATH}/auth`, authRoutes);
+// app.use("/api/v1/auth", authRoutes);
 app.use(ErrorHandler);
 
 // // // Add this debugging

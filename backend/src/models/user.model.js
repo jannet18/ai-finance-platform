@@ -1,19 +1,21 @@
 const mongoose = require("mongoose");
 const { compareValue, hashPassword } = require("../utils/bcrypt");
+const { minLength } = require("zod");
 
 const userSchema = new mongoose.Schema({
   fullName: {
     type: String,
-    required: true,
+    required: [true, "Full name is required"],
   },
   email: {
     type: String,
-    required: true,
+    required: [true, "Email is required"],
     unique: true,
   },
   password: {
     type: String,
-    required: true,
+    required: [true, "Password is required"],
+    minLength: [6, "Password must be at least 6 characters "],
   },
   profilePicture: {
     type: String,
@@ -29,10 +31,9 @@ const userSchema = new mongoose.Schema({
   },
 });
 userSchema.pre("save", async function (next) {
-  if (this.isModified("password")) {
-    if (this.password) {
-      this.password = await hashPassword(this.password);
-    }
+  if (!this.isModified("password")) return next();
+  if (this.password) {
+    this.password = await hashPassword(this.password);
   }
   this.updatedAt = Date.now();
   next();
@@ -45,7 +46,7 @@ userSchema.methods.omitPassword = function () {
 };
 
 userSchema.methods.comparePassword = async function (candidatePassword) {
-  return compareValue(this.password, candidatePassword);
+  return compareValue(candidatePassword, this.password);
 };
 
 const UserModel = mongoose.model("User", userSchema);
