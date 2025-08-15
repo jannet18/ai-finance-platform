@@ -9,12 +9,15 @@ const asyncHandler = require("./middlewares/asyncHandler.middleware");
 const authRoutes = require("./routes/auth.route");
 const ErrorHandler = require("./middlewares/errorHandler.middleware");
 const { BadRequestException } = require("./utils/app-error");
+const passport = require("passport");
+const userRoutes = require("./routes/user.route");
 
 const app = express();
 const BASE_PATH = Env.BASE_PATH || "/api/v1";
 app.use(express.json());
 app.use(cookieParser());
 app.use(cors());
+app.use(passport.initialize());
 // app.use(
 //   cors({
 //     origin: Env.FRONTEND_URL,
@@ -35,22 +38,9 @@ app.get(
 );
 
 app.use(`/${BASE_PATH}/auth`, authRoutes);
-// app.use("/api/v1/auth", authRoutes);
+app.use(`/${BASE_PATH}/user`, userRoutes);
 app.use(ErrorHandler);
 
-// // // Add this debugging
-// // console.log("=== DEBUG INFO ===");
-// // console.log(`BASE_PATH: "${BASE_PATH}"`);
-// // console.log(`Full auth route path: "/${BASE_PATH}/auth"`);
-// // console.log(
-// //   `Expected register URL: http://localhost:${Env.PORT}/${BASE_PATH}/auth/register`
-// // );
-
-// // Test route registration
-// app.get("/test", (req, res) => {
-//   res.json({ message: "Test route works!" });
-// });
-// // Debug: log all routes
 app._router?.stack.forEach((middleware) => {
   if (middleware.route) {
     // Routes registered directly on the app

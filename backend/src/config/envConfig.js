@@ -1,7 +1,7 @@
 const { getEnv } = require("../utils/getEnv");
 
 const envConfig = () => {
-  console.log("Loading environment configuration...");
+  // console.log("Loading environment configuration...");
   return {
     NODE_ENV: getEnv("NODE_ENV", "development"),
     PORT: getEnv("PORT", 8000),

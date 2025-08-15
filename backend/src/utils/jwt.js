@@ -44,7 +44,7 @@ function signJwtToken(userId) {
     expiresIn: Env.JWT_EXPIRES_IN || "1h",
   };
 
-  const token = jwt.sign(payload, secret, options);
+  const token = jwt.sign(payload, secret, options, { audience: ["user"] });
   const decoded = jwt.decode(token);
   const expiresAt = decoded && decoded.exp ? decoded.exp * 1000 : null;
 
