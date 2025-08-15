@@ -11,6 +11,7 @@ const ErrorHandler = require("./middlewares/errorHandler.middleware");
 const { BadRequestException } = require("./utils/app-error");
 const passport = require("passport");
 const userRoutes = require("./routes/user.route");
+const transactionRoutes = require("./routes/transaction.route");
 
 const app = express();
 const BASE_PATH = Env.BASE_PATH || "/api/v1";
@@ -39,6 +40,7 @@ app.get(
 
 app.use(`/${BASE_PATH}/auth`, authRoutes);
 app.use(`/${BASE_PATH}/user`, userRoutes);
+app.use(`/${BASE_PATH}/transactions`, transactionRoutes);
 app.use(ErrorHandler);
 
 app._router?.stack.forEach((middleware) => {
