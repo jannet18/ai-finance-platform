@@ -1,7 +1,7 @@
-const { mongoose } = require("mongoose");
 const { calculateNextOccurence } = require("../utils/helper");
 const calculateNextOccurence =
   require("../utils/helper").calculateNextOccurence;
+const TransactionModel = require("../models/transaction.model");
 
 const createTransactionService = async (body, userId) => {
   let nextRecurringDate = null;
@@ -33,6 +33,47 @@ const createTransactionService = async (body, userId) => {
   return transaction.save();
 };
 
+const getAllTransactionsService = async (userId, filters, pagination) => {
+  const { keyword, type, recurringStatus } = filters;
+
+  const filterConditions = { userId };
+  if (keyword) {
+    filterConditions.$or = [
+      { title: { $regex: keyword, $options: "i" } },
+      { category: { $regex: keyword, $options: "i" } },
+    ];
+  }
+  if (type) {
+    filterConditions.type = type;
+  }
+  if (recurringStatus) {
+    recurringStatus === "RECURRING";
+    filterConditions.isRecurring = true;
+  } else if (recurringStatus === "NON_RECURRING") {
+    filterConditions.isRecurring = false;
+  }
+
+  const { pageSize, pageNumber } = pagination;
+
+  if (pageSize <= 0 || pageNumber <= 0) {
+    throw new Error("Invalid pagination parameters");
+  }
+  const skip = (pageNumber - 1) * pageSize;
+
+  const transactions = await TransactionModel.find(filterConditions)
+    .skip(skip)
+    .limit(pageSize)
+    .sort({ createdAt: -1 });
+  const totalcount = TransactionModel.countDocuments(filterConditions);
+  const totalPages = Math.ceil(totalcount / pageSize);
+
+  return {
+    transactions,
+    pagination: { pageSize, pageNumber, totalcount, totalPages, skip },
+  };
+};
+
 module.exports = {
   createTransactionService,
+  getAllTransactionsService,
 };
