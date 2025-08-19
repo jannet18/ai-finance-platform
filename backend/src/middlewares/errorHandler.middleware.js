@@ -15,9 +15,30 @@ const formatZodError = (res, err) => {
   });
 };
 
+const handleMulterError = (res, err) => {
+  const messages = {
+    LIMIT_UNEXPECTED_FILE: "Invalid file field name. Please try use 'file' ",
+    LIMIT_FILE_SIZE: "File size exceeds the limit of 5MB",
+    LIMIT_FILE_COUNT: "Too many files uploaded. Please upload only one file.",
+    DEFAULT: "File upload error",
+  };
+  return res.status(HTTPSTATUS.BAD_REQUEST).json({
+    message: messages[err.code] || messages.DEFAULT,
+    messages: DEFAULT,
+    error: err.message,
+  });
+};
 const ErrorHandler = (err, req, res, next) => {
   if (err instanceof ZodError) {
     return formatZodError(res, err);
+  }
+  if (err instanceof MulterError) {
+    const { status, message, err } = handleMulterError(err);
+    return res.status(status).json({
+      message,
+      error: err,
+      errorCode: ErrorCodeEnum.FILE_UPLOAD_ERROR,
+    });
   }
   if (err instanceof AppError) {
     return res.status(err.statusCode).json({
