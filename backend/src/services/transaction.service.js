@@ -2,6 +2,7 @@ const { calculateNextOccurence } = require("../utils/helper");
 const calculateNextOccurence =
   require("../utils/helper").calculateNextOccurence;
 const TransactionModel = require("../models/transaction.model");
+const { NotfoundException } = require("../utils/app-error");
 
 const createTransactionService = async (body, userId) => {
   let nextRecurringDate = null;
@@ -73,7 +74,19 @@ const getAllTransactionsService = async (userId, filters, pagination) => {
   };
 };
 
+const getTransactionByIdService = async (transactionId, userId) => {
+  const transaction = await TransactionModel.findOne({
+    _id: transactionId,
+    userId,
+  });
+
+  if (!transaction) {
+    throw new NotfoundException("Transaction not found");
+  }
+  return transaction;
+};
 module.exports = {
   createTransactionService,
   getAllTransactionsService,
+  getTransactionByIdService,
 };

@@ -1,8 +1,10 @@
+const { get } = require("mongoose");
 const { HTTPSTATUS } = require("../config/httpConfig");
 const asyncHandler = require("../middlewares/asyncHandler.middleware");
 const {
   getAllTransactionsService,
   createTransactionService,
+  getTransactionByIdService,
 } = require("../services/transaction.service");
 const { transactionSchema } = require("../validators/transaction.validator");
 
@@ -41,4 +43,20 @@ const getAllTransactions = asyncHandler(async (req, res) => {
   });
 });
 
-module.exports = { createTransaction, getAllTransactions };
+const getTransactionById = asyncHandler(async (req, res) => {
+  const transactionId = transactionSchema.safeParse(req.params.id);
+  const userId = req.user?._id;
+
+  const transaction = await getTransactionByIdService(transactionId, userId);
+  if (!transaction) {
+    return res.status(HTTPSTATUS.NOT_FOUND).json({
+      message: "Transaction not found",
+    });
+  }
+
+  return res.status(HTTPSTATUS.OK).json({
+    message: "Transaction fetched successfully",
+    data: transaction,
+  });
+});
+module.exports = { createTransaction, getAllTransactions, getTransactionById };
