@@ -4,13 +4,9 @@ const { registerService, loginService } = require("../services/auth.service");
 const { loginSchema, registerSchema } = require("../validators/auth.validator");
 
 const registerUser = asyncHandler(async (req, res) => {
-  // console.log("=== VALIDATION DEBUG ===");
-  // console.log("Raw request body:", req.body);
-  // console.log("Request headers:", req.headers);
-  // console.log("Content-Type header:", req.headers["content-type"]);
-  // if (!req.body || Object.keys(req.body).length === 0) {
-  //   console.log("Request body is empty or undefined");
-  // }
+  if (!req.body || Object.keys(req.body).length === 0) {
+    console.log("Request body is empty or undefined");
+  }
   const body = registerSchema.safeParse(req.body);
   if (!body.success) {
     return res.status(HTTPSTATUS.BAD_REQUEST).json({
@@ -20,16 +16,13 @@ const registerUser = asyncHandler(async (req, res) => {
     });
   }
 
-  const result = await registerService(body.data);
+  const result = await registerService(body?.data);
   return res
     .status(HTTPSTATUS.CREATED)
     .json({ message: "User registered successfully", data: result });
 });
 
 const loginUser = asyncHandler(async (req, res) => {
-  // console.log("Login attempt:", email, password);
-  // console.log("Stored password hash:", user.password);
-  // console.log("Compare result:", await user.comparePassword(password));
   const body = loginSchema.safeParse(req.body);
   if (!body.success) {
     return res.status(HTTPSTATUS.BAD_REQUEST).json({

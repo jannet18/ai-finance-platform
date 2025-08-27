@@ -8,7 +8,9 @@ const {
   deleteTransaction,
   bulkDeleteTransaction,
   bulkTransaction,
+  scanReceipt,
 } = require("../controllers/transaction.controller");
+const { upload } = require("../config/cloudinaryConfig");
 
 const Router = require("express").Router;
 
@@ -42,5 +44,12 @@ transactionRoutes.post(
   "/bulk-transaction",
   passportAuthenticateJwt,
   bulkTransaction
+);
+
+transactionRoutes.post(
+  "/scan-receipt",
+  passportAuthenticateJwt,
+  upload.single("receipt"),
+  scanReceipt
 );
 module.exports = transactionRoutes;

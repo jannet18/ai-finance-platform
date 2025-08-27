@@ -12,6 +12,7 @@ const connectDB = async () => {
     const connect = await mongoose.connect(Env.MONGO_URI, {
       useNewUrlParser: true,
       useUnifiedTopology: true,
+      maxPoolSize: 10,
     });
     console.log(`MongoDB connected successfully: ${connect.connection.host}`);
   } catch (error) {

@@ -1,4 +1,3 @@
-const { get } = require("mongoose");
 const { HTTPSTATUS } = require("../config/httpConfig");
 const asyncHandler = require("../middlewares/asyncHandler.middleware");
 const {
@@ -9,13 +8,14 @@ const {
   deleteTransactionService,
   bulkDeleteTransactionService,
   updateTransactionService,
+  scanReceiptService,
 } = require("../services/transaction.service");
 const {
   transactionSchema,
   bulkDeleteTransactionSchema,
   bulkTransactionSchema,
 } = require("../validators/transaction.validator");
-const { de } = require("zod/v4/locales");
+
 const updateTransactionSchema =
   require("../validators/transaction.validator").updateTranscationSchema;
 
@@ -138,6 +138,19 @@ const bulkTransaction = asyncHandler(async (req, res) => {
     ...bulkResultList,
   });
 });
+
+const scanReceipt = asyncHandler(async (req, res) => {
+  const file = req?.file;
+
+  const scanResult = await scanReceiptService(file);
+
+  return res.status(HTTPSTATUS.OK).json({
+    message: "Receipt scanned successfully",
+    data: {
+      ...scanResult,
+    },
+  });
+});
 module.exports = {
   createTransaction,
   getAllTransactions,
@@ -147,4 +160,5 @@ module.exports = {
   deleteTransaction,
   bulkDeleteTransaction,
   bulkTransaction,
+  scanReceipt,
 };

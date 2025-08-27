@@ -1,6 +1,5 @@
 const mongoose = require("mongoose");
 const { compareValue, hashPassword } = require("../utils/bcrypt");
-const { minLength } = require("zod");
 
 const userSchema = new mongoose.Schema({
   fullName: {

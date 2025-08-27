@@ -12,7 +12,7 @@ const getCurrentUser = async (req, res, next) => {
     const user = await findByIdUserService(userId);
     return res
       .status(HTTPSTATUS.OK)
-      .json({ message: "User fetched successfully.", user: req.user });
+      .json({ message: "User fetched successfully.", data: user });
   } catch (error) {
     res.status(HTTPSTATUS.INTERNAL_SERVER_ERROR).json({
       message: "Error fetching user profile",

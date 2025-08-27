@@ -2,6 +2,7 @@ const { ZodError } = require("zod");
 const { HTTPSTATUS } = require("../config/httpConfig");
 const { ErrorCodeEnum } = require("../enums/errorCodeEnum");
 const { AppError } = require("../utils/app-error");
+const { MulterError } = require("multer");
 
 const formatZodError = (res, err) => {
   const errors = err?.issues?.map((err) => ({

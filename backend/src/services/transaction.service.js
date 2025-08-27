@@ -1,11 +1,13 @@
 const { calculateNextOccurence } = require("../utils/helper");
-const calculateNextOccurence =
-  require("../utils/helper").calculateNextOccurence;
 const TransactionModel = require("../models/transaction.model");
-const { NotfoundException } = require("../utils/app-error");
-const { is } = require("zod/v4/locales");
-const { use } = require("passport");
-const { success } = require("zod");
+const {
+  NotfoundException,
+  BadRequestException,
+} = require("../utils/app-error");
+const axios = require("axios");
+const { genAI } = require("../config/google-aiConfig");
+const { createUserContent, createPartFromBase64 } = require("@google/genai");
+const { receiptPrompt } = require("../utils/prompt");
 
 const createTransactionService = async (body, userId) => {
   let nextRecurringDate = null;
@@ -216,6 +218,67 @@ const bulkTransactionService = async (userId, transactions) => {
   }
 };
 
+const scanReceiptService = async (file) => {
+  if (!file) throw new BadRequestException("No file uploaded.");
+
+  try {
+    if (!file.path) {
+      throw new BadRequestException("File path is not available.");
+    }
+
+    const scanResponse = await axios.get(file.path, {
+      arraybuffer: true,
+      headers: {
+        "Content-Type": file.mimetype,
+      },
+    });
+
+    const base64String = Buffer.from(scanResponse.data).toString("base64");
+    if (!base64String) {
+      throw new BadRequestException("Failed to process file .");
+    }
+    const result = await ai.models.generateContent({
+      model: "gemini-2.5-flash",
+      contents: [
+        createUserContent([
+          receiptPrompt,
+          createPartFromBase64(base64String, file.mimetype),
+        ]),
+      ],
+      config: {
+        temperature: 0.2,
+        topP: 1,
+        maxOutputTokens: 1024,
+        responseMimeType: "application/json",
+      },
+    });
+
+    const response = result?.text;
+    const cleanedText = response.replace(/[\n\r]+/g, "").trim();
+    if (!cleanedText) {
+      return error("Could not process receipt content. Please try again.");
+    }
+
+    const data = JSON.parse(cleanedText);
+    if (!data.amount || !data.date || !data.title) {
+      return "Essential fields missing in the scanned data.";
+    }
+
+    return {
+      title: data.title || "Scanned Receipt",
+      amount: data.amount,
+      date: data.date,
+      description: data.description,
+      category: data.category || "Others",
+      paymentMethod: data.paymentMethod,
+      type: data.type || "EXPENSE",
+      receiptUrl: file.path,
+    };
+  } catch (error) {}
+  return {
+    error: error.message || "Receipt scanning unavailable.",
+  };
+};
 module.exports = {
   createTransactionService,
   getAllTransactionsService,
@@ -224,4 +287,6 @@ module.exports = {
   updateTransactionService,
   deleteTransactionService,
   bulkDeleteTransactionService,
+  bulkTransactionService,
+  scanReceiptService,
 };

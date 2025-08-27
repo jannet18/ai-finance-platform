@@ -1,5 +1,32 @@
 const mongoose = require("mongoose");
 
+const TRANSACTION_STATUS = {
+  PENDING: "PENDING",
+  COMPLETED: "COMPLETED",
+  FAILED: "FAILED",
+};
+
+const TRANSACTION_TYPE = {
+  INCOME: "income",
+  EXPENSE: "expense",
+};
+
+const RECURRING_INTERVAL = {
+  DAILY: "DAILY",
+  WEEKLY: "WEEKLY",
+  MONTHLY: "MONTHLY",
+  YEARLY: "YEARLY",
+};
+
+const PAYMENT_METHOD = {
+  CARD: "CARD",
+  BANK_TRANSFER: "BANK_TRANSFER",
+  MOBILE_PAYMENT: "MOBILE_PAYMENT",
+  AUTO_DEBIT: "AUTO_DEBIT",
+  CASH: "CASH",
+  OTHER: "OTHER",
+};
+
 const transactionSchema = new mongoose.Schema(
   {
     userId: {
@@ -13,7 +40,7 @@ const transactionSchema = new mongoose.Schema(
     },
     type: {
       type: String,
-      enum: ["income", "expense"],
+      enum: Object.values(TRANSACTION_TYPE),
       required: true,
     },
     amount: {
@@ -41,7 +68,7 @@ const transactionSchema = new mongoose.Schema(
     },
     recurringInterval: {
       type: String,
-      enum: ["DAILY", "WEEKLY", "MONTHLY", "YEARLY"],
+      enum: Object.values(RECURRING_INTERVAL),
       default: null,
     },
     nextRecurringDate: {
@@ -53,20 +80,13 @@ const transactionSchema = new mongoose.Schema(
     },
     status: {
       type: String,
-      enum: ["PENDING", "COMPLETED", "FAILED"],
-      default: COMPLETED,
+      enum: Object.values(TRANSACTION_STATUS),
+      default: TRANSACTION_STATUS.COMPLETED,
     },
     paymentMethod: {
       type: String,
-      enum: [
-        "CARD",
-        "BANK_TRANSFER",
-        "MOBILE_PAYMENT",
-        "AUTO_DEBIT",
-        "CASH",
-        "OTHER",
-      ],
-      default: CASH,
+      enum: Object.values(PAYMENT_METHOD),
+      default: PAYMENT_METHOD.CASH,
     },
   },
   {
@@ -77,4 +97,11 @@ const transactionSchema = new mongoose.Schema(
 );
 
 const TransactionModel = mongoose.model("Transaction", transactionSchema);
-export default TransactionModel;
+
+module.exports = {
+  TransactionModel,
+  PAYMENT_METHOD,
+  TRANSACTION_TYPE,
+  TRANSACTION_STATUS,
+  RECURRING_INTERVAL,
+};

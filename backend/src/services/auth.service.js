@@ -42,8 +42,10 @@ const registerService = async (userData) => {
 
       return { user: newUser.omitPassword() };
     });
+
     return result;
   } catch (error) {
+    await session.abortTransaction();
     throw error;
   } finally {
     await session.endSession();
@@ -61,7 +63,7 @@ const loginService = async (userData) => {
     throw new UnauthorizedException("Invalid Credentials");
   }
 
-  const { token, expiresAt } = signJwtToken({ userId: user.id });
+  const { token, expiresAt } = signJwtToken(user.id);
 
   const reportSetting = await ReportSettingModel.findOne(
     { userId: user._id },
